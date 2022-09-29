@@ -1,4 +1,4 @@
-### Состав команды
+### Состав команды Чайхона 
 * [Козочкин Михаил](https://github.com/postlog) (Капитан)
 * [Мягких Елисей](https://github.com/EliseySoft)
 * [Пашкевич Денис](https://github.com/alien-agent)

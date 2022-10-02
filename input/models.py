@@ -21,9 +21,18 @@ class AssigmentAction(Action):
 @dataclasses.dataclass
 class ExtraAction(Action):
     function: Function
+    arguments: typing.List[typing.Union[Variable, Constant]]
 
 
 @dataclasses.dataclass
 class PredicateAction(Action):
     predicate: Function
     arguments: typing.List[typing.Union[Variable, Constant]]
+
+
+__all__ = [
+    'Action',
+    'AssigmentAction',
+    'ExtraAction',
+    'PredicateAction',
+]

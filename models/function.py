@@ -92,6 +92,9 @@ class FunctionsChain:
     def get_functions(self) -> typing.List[Function]:
         return self._functions
 
+    def remove_function(self, function: Function) -> None:
+        self._functions.remove(function)
+
     @property
     def steps(self) -> typing.List[typing.List[FunctionStep]]:
         return self._steps

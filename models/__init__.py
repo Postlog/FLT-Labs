@@ -5,5 +5,4 @@ from .function import *
 from .int import *
 from .nfa import *
 from .nullable_bool import *
-from .parser import *
 from .regex import *

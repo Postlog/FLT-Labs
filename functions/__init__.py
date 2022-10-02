@@ -1,13 +1,13 @@
-from .example import ExampleFunction
+from .fibonacci import FibonacciFunction
 from .test import TestFunction
 
 functions = {
-    'example': ExampleFunction()
+    'Fibonacci': FibonacciFunction(),
 }
 
 predicates = {
 }
 
 extras = {
-    "test": TestFunction()
+    "Test": TestFunction()
 }

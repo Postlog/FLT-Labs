@@ -1,11 +1,10 @@
 import typing
-from pprint import pprint
 
 from models import Int, Regex, FunctionsChain, Function, Variable, Constant
 
 from functions import functions, predicates, extras
 from input import \
-    TokenStream, Tag, Tokenizer,\
+    TokenStream, Tag, \
     Action, PredicateAction, ExtraAction, AssigmentAction, \
     CustomSyntaxError, CustomSyntaxErrorWithLineNumber
 
@@ -120,7 +119,7 @@ class Parser:
         token = self._stream.last_fetched()
 
         if token.tag == Tag.REGEX:
-            argument = Constant(Regex())
+            argument = Constant(Regex(token.image))
         elif token.tag == Tag.NUMBER:
             argument = Constant(Int(int(token.image)))
         elif token.tag == Tag.VARIABLE_NAME:

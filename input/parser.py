@@ -3,10 +3,9 @@ import typing
 from models import Int, Regex, FunctionsChain, Function, Variable, Constant
 
 from functions import functions, predicates, extras
-from input import \
-    TokenStream, Tag, \
-    Action, PredicateAction, ExtraAction, AssigmentAction, \
-    CustomSyntaxError, CustomSyntaxErrorWithLineNumber
+from input.tokenizer import TokenStream, Tag
+from input.models import Action, PredicateAction, ExtraAction, AssigmentAction
+from input.exceptions import CustomSyntaxError, CustomSyntaxErrorWithLineNumber
 
 
 class Parser:

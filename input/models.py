@@ -2,7 +2,6 @@ import dataclasses
 import typing
 
 from models.base import Variable, Constant
-from models.function import FunctionsChain, Function
 
 
 @dataclasses.dataclass
@@ -11,28 +10,28 @@ class Action:
 
 
 @dataclasses.dataclass
-class AssigmentAction(Action):
+class AssignmentAction(Action):
     variable: Variable
-    functions: FunctionsChain
+    functions: list[callable]
     arguments: typing.List[typing.Union[Variable, Constant]]
     output_required: bool
 
 
 @dataclasses.dataclass
 class ExtraAction(Action):
-    function: Function
+    function: callable
     arguments: typing.List[typing.Union[Variable, Constant]]
 
 
 @dataclasses.dataclass
 class PredicateAction(Action):
-    predicate: Function
+    predicate: callable
     arguments: typing.List[typing.Union[Variable, Constant]]
 
 
 __all__ = [
     'Action',
-    'AssigmentAction',
+    'AssignmentAction',
     'ExtraAction',
     'PredicateAction',
 ]

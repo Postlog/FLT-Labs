@@ -3,7 +3,7 @@ import dataclasses
 import re
 import typing
 
-from functions import functions, predicates, extras
+import functions.registry as registry
 
 
 class Tag(enum.Enum):
@@ -58,7 +58,8 @@ class TokenStream:
 
 
 class Tokenizer:
-    _defined_variables_names: typing.List[str] = []
+    def __init__(self):
+        self._defined_variables_names: typing.List[str] = []
 
     def tokenize(self, raw_input: str) -> TokenStream:
         lines = _sanitize_and_split(raw_input)
@@ -118,7 +119,7 @@ def _collect_variables_names(lines: typing.List[str]) -> typing.List[str]:
 
 
 def _is_function_name(symbol: str) -> bool:
-    return symbol in predicates or symbol in extras or symbol in functions
+    return registry.get_function(symbol) is not None
 
 
 def _is_valid_variable_name(symbol: str) -> bool:

@@ -1,12 +1,11 @@
 import typing
 
-from models import Int, Regex, FunctionsChain, Function, Variable, Constant
+from models import Int, Variable, Constant, Regex, RegexParser, RegexSyntaxError
 
-from functions import functions, predicates, extras
-from input import \
-    TokenStream, Tag, \
-    Action, PredicateAction, ExtraAction, AssigmentAction, \
-    CustomSyntaxError, CustomSyntaxErrorWithLineNumber
+import functions.registry as registry
+from input.tokenizer import TokenStream, Tag
+from input.models import Action, PredicateAction, ExtraAction, AssignmentAction
+from input.exceptions import CustomSyntaxError, CustomSyntaxErrorWithLineNumber
 
 
 class Parser:
@@ -31,17 +30,17 @@ class Parser:
     def _parse_line(self):
         token = self._stream.next()
         if token.tag == Tag.FUNCTION_NAME:
-            if token.image in predicates:
+            if registry.has_function(token.image, registry.FunctionType.PREDICATE):
                 self._parse_predicate_line()
-            elif token.image in extras:
+            elif registry.has_function(token.image, registry.FunctionType.EXTRA):
                 self._parse_extra_line()
             else:
                 raise CustomSyntaxError(f'Неизвестная функция "{token.image}"')
         else:
-            self._parse_assigment_line()
+            self._parse_assignment_line()
 
     def _parse_predicate_line(self):
-        predicate = predicates[self._stream.last_fetched().image]
+        predicate = registry.get_function(self._stream.last_fetched().image)
 
         token = self._stream.next()
         if token.tag in (Tag.EOS, Tag.LF):
@@ -51,7 +50,7 @@ class Parser:
         self._actions.append(PredicateAction(predicate, arguments))
 
     def _parse_extra_line(self):
-        extra_function = extras[self._stream.last_fetched().image]
+        extra_function = registry.get_function(self._stream.last_fetched().image)
 
         arguments = []
         token = self._stream.next()
@@ -60,7 +59,7 @@ class Parser:
 
         self._actions.append(ExtraAction(extra_function, arguments))
 
-    def _parse_assigment_line(self):
+    def _parse_assignment_line(self):
         token = self._stream.last_fetched()
         if token.tag != Tag.VARIABLE_NAME:
             raise CustomSyntaxError(f'Ожидалось имя переменной, но был встречен "{token.image}"')
@@ -94,9 +93,9 @@ class Parser:
                 raise CustomSyntaxError(f'Ожидался конец строки, но был встречен "{token.image}"')
 
         self._defined_variables_names.append(variable_name)
-        self._actions.append(AssigmentAction(
+        self._actions.append(AssignmentAction(
             Variable(variable_name),
-            FunctionsChain(functions_list),
+            functions_list,
             arguments,
             output_required
         ))
@@ -119,7 +118,11 @@ class Parser:
         token = self._stream.last_fetched()
 
         if token.tag == Tag.REGEX:
-            argument = Constant(Regex(token.image))
+            try:
+                tree = RegexParser.parse(token.image)
+            except RegexSyntaxError as e:
+                raise CustomSyntaxError(str(e))
+            argument = Constant(Regex(tree))
         elif token.tag == Tag.NUMBER:
             argument = Constant(Int(int(token.image)))
         elif token.tag == Tag.VARIABLE_NAME:
@@ -131,12 +134,12 @@ class Parser:
 
         return argument
 
-    def _parse_functions(self) -> typing.List[Function]:
+    def _parse_functions(self) -> typing.List[callable]:
         token = self._stream.last_fetched()
-        if token.image not in functions:
+        if not registry.has_function(token.image, registry.FunctionType.REGULAR):
             raise CustomSyntaxError(f'Неизвестная функция "{token.image}"')
 
-        functions_list = [functions[token.image]]
+        functions_list = [registry.get_function(token.image)]
         token = self._stream.next()
 
         while token.tag == Tag.DOT:
@@ -144,10 +147,10 @@ class Parser:
 
             if token.tag != Tag.FUNCTION_NAME:
                 raise CustomSyntaxError(f'Ожидалось название функции, но был встречен {token.image}')
-            if token.image not in functions:
+            if not registry.has_function(token.image, registry.FunctionType.REGULAR):
                 raise CustomSyntaxError(f'Неизвестная функция "{token.image}"')
 
-            functions_list.append(functions[token.image])
+            functions_list.append(registry.get_function(token.image))
 
             token = self._stream.next()
 

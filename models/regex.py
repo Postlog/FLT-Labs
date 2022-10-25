@@ -20,18 +20,6 @@ class Node:
         self.value = value
         self.children = children
 
-    # @property
-    # def node_type(self):
-    #     return self._node_type
-    #
-    # @property
-    # def value(self):
-    #     return self._value
-    #
-    # @property
-    # def children(self):
-    #     return self._children
-
     def __repr__(self):
         value_repr = ''
         if self.node_type == NodeType.SYMBOL:

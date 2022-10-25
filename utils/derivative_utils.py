@@ -1,6 +1,7 @@
 import copy
 
-from models.regex import Node, NodeType, Regex, RegexParser
+from models.regex import Node, NodeType, Regex
+from input.exceptions import DerivativeBrzozovskiExceptions
 
 
 class DerivativeBrzozovski:
@@ -25,7 +26,6 @@ class DerivativeBrzozovski:
 
             if regex.children[0].node_type == NodeType.SYMBOL and regex.children[0].value == "":
                 regex.node_type = NodeType.ZERO_OR_MORE
-                # self.delete_operation(second_arg, regex)
                 regex.children[0] = copied_regex.children[0]
                 del regex.children[1]
             elif regex.children[0].node_type == NodeType.EMPTY_SET:
@@ -35,7 +35,6 @@ class DerivativeBrzozovski:
         elif regex.node_type == NodeType.ALT:
             regex.children[0] = self.get_derivative(regex.children[0])
             regex.children[1] = self.get_derivative(regex.children[1])
-            # удаление первого элемента, если он пустой
             if regex.children[0].node_type == NodeType.EMPTY_SET:
                 regex_second_arg = copy.deepcopy(regex.children[1])
                 regex.node_type = regex_second_arg.node_type
@@ -45,7 +44,6 @@ class DerivativeBrzozovski:
                     regex.children[0] = regex_second_arg.children[0]
                     if len(regex.children[1].children) == 2:
                         regex.children[1] = regex_second_arg.children[1]
-            # удаление второго элемента, если он пустой
             if regex.children[1].node_type == NodeType.EMPTY_SET:
                 regex_first_arg = copy.deepcopy(regex.children[0])
                 regex.node_type = regex_first_arg.node_type
@@ -94,7 +92,7 @@ class DerivativeBrzozovski:
         if len(var.value) == 1:
             self.derivative_var(var)
         else:
-            print("Wrong parse")
+            DerivativeBrzozovskiExceptions("Неправильный пасринг регулярного выражения")
 
     def derivative_var(self, var: Node) -> None:
         if var.value == self.differential:
@@ -150,7 +148,7 @@ def derivative_regex(regex: Node, differential: str) -> set:
                 for second_element_in_set in second_elements_in_set:
                     antimirov_set.add(second_element_in_set)
         else:
-            print("Wrong operation")
+            DerivativeBrzozovskiExceptions("Определена неверная операция")
     elif regex.node_type == NodeType.EMPTY_SET:
         antimirov_set = set()
     return antimirov_set

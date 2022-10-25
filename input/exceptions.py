@@ -11,6 +11,10 @@ class CustomSyntaxErrorWithLineNumber(CustomSyntaxError):
         return super().__str__() + f'. Номер строки: {self._line_number}'
 
 
+class DerivativeBrzozovskiExceptions(Exception):
+    pass
+
+
 __all__ = [
     'CustomSyntaxError',
     'CustomSyntaxErrorWithLineNumber'

@@ -1,7 +1,10 @@
 import copy
 
-from models.regex import Node, NodeType, Regex
-from input.exceptions import DerivativeBrzozovskiExceptions
+from models.regex import Node, NodeType
+
+
+class DerivativeBrzozovskiExceptions(Exception):
+    pass
 
 
 class DerivativeBrzozovski:
@@ -92,7 +95,7 @@ class DerivativeBrzozovski:
         if len(var.value) == 1:
             self.derivative_var(var)
         else:
-            DerivativeBrzozovskiExceptions("Неправильный пасринг регулярного выражения")
+            raise DerivativeBrzozovskiExceptions("Неправильный пасринг регулярного выражения")
 
     def derivative_var(self, var: Node) -> None:
         if var.value == self.differential:
@@ -148,7 +151,7 @@ def derivative_regex(regex: Node, differential: str) -> set:
                 for second_element_in_set in second_elements_in_set:
                     antimirov_set.add(second_element_in_set)
         else:
-            DerivativeBrzozovskiExceptions("Определена неверная операция")
+            raise DerivativeBrzozovskiExceptions("Определена неверная операция")
     elif regex.node_type == NodeType.EMPTY_SET:
         antimirov_set = set()
     return antimirov_set
@@ -160,7 +163,7 @@ def derivative_var_antimirov(var: str, differential: str) -> set:
         else:
             antimirov_set = set()
     else:
-        print("Wrong parse")
+        raise DerivativeBrzozovskiExceptions("Неправильный пасринг регулярного выражения")
     return antimirov_set
 
 def tree_to_regex(tree: Node) -> str:

@@ -47,3 +47,23 @@ class FiniteAutomaton:
     @property
     def is_deterministic(self):
         return self._is_deterministic
+
+
+class FiniteAutomatonIndexed(FiniteAutomaton):
+    start_number: int
+    end_number: int
+
+    def __init__(self):
+        self.start_number = 0
+        self.end_number = 0
+        self.initial_state = 'q0'
+        self.states = set([])
+        self.transitions = {}
+        self.input_symbols = set([])
+        self.final_states = set([])
+
+    def add_state(self, pos):
+        self.states.add('q' + str(pos))
+
+    def add_input_symbol(self, regex):
+        self.input_symbols.add(regex.value)

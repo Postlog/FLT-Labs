@@ -53,9 +53,13 @@ class FiniteAutomatonIndexed(FiniteAutomaton):
     start_number: int
     end_number: int
 
-    def __init__(self):
-        self.start_number = 0
-        self.end_number = 0
+    def __init__(
+            self,
+            start_number: int,
+            end_number: int,
+        ):
+        self.start_number = start_number
+        self.end_number = start_number
         self.initial_state = 'q0'
         self.states = set([])
         self.transitions = {}

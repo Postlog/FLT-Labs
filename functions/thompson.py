@@ -1,4 +1,5 @@
 '''Модуль преобразования регулярного выражения в автомат Томпсона'''
+
 from models.regex import RegexParser
 from models import FiniteAutomaton, FiniteAutomatonIndexed
 

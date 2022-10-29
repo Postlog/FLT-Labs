@@ -142,12 +142,17 @@ class RegexParser:
 
 
 class Regex(Type):
-    def __init__(self, tree: Node):
+    def __init__(self, tree: Node, source_str: str):
         self._tree = tree
+        self._source_str = source_str
 
     @property
     def tree(self) -> Node:
         return self._tree
+
+    @property
+    def source_str(self):
+        return self._source_str
 
 
 def _peek(lst: list[typing.Any]) -> typing.Optional[typing.Any]:

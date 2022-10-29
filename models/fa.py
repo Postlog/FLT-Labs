@@ -1,6 +1,7 @@
 from typing import Optional
 
 from models import Regex
+from models.epsilon import EPSILON
 
 
 class FiniteAutomaton:
@@ -38,7 +39,7 @@ class FiniteAutomaton:
             (len(transitions_to) == 1)
             for transition_from in self.transitions
             for transitions_to in self.transitions[transition_from].values()
-        )
+        ) and EPSILON not in input_symbols
 
         if not self._is_deterministic and source_regex is None:
             raise ValueError('You must pass the Regex from which the NFA was created')

@@ -76,3 +76,37 @@ class FiniteAutomaton:
 
     def _get_transitions(self, from_state: str, symbol: str) -> list[str]:
         return list(self.transitions.get(from_state, {}).get(symbol, set()))
+
+
+class FiniteAutomatonIndexed(FiniteAutomaton):
+    start_number: int
+    end_number: int
+
+    def __init__(
+        self,
+        initial_state: str,
+        states: set[str],
+        final_states: set[str],
+        input_symbols: set[str],
+        transitions: dict[str, dict[str, set[str]]],
+        start_number: int,
+        end_number: int,
+        source_regex: Optional[Regex] = None
+    ):
+        super().__init__(
+            initial_state,
+            states,
+            final_states,
+            input_symbols,
+            transitions,
+            source_regex
+        )
+        self.start_number = start_number
+        self.end_number = end_number
+
+
+    def add_state(self, pos):
+        self.states.add('q' + str(pos))
+
+    def add_input_symbol(self, regex):
+        self.input_symbols.add(regex.value)

@@ -54,17 +54,35 @@ class FiniteAutomatonIndexed(FiniteAutomaton):
     end_number: int
 
     def __init__(
-            self,
-            start_number: int,
-            end_number: int,
-        ):
+        self,
+        initial_state: str,
+        states: set[str],
+        final_states: set[str],
+        input_symbols: set[str],
+        transitions: dict[str, dict[str, set[str]]],
+        start_number: int,
+        end_number: int,
+        source_regex: Optional[Regex] = None
+    ):
+        super().__init__(
+            initial_state,
+            states,
+            final_states,
+            input_symbols,
+            transitions,
+            source_regex
+        )
         self.start_number = start_number
-        self.end_number = start_number
-        self.initial_state = 'q0'
-        self.states = set([])
-        self.transitions = {}
-        self.input_symbols = set([])
-        self.final_states = set([])
+        self.end_number = end_number
+        #self.start_number = start_number
+        #self.end_number = end_number
+        # self.start_number = start_number
+        # self.end_number = start_number
+        # self.initial_state = 'q0'
+        #self.states = set([])
+        # self.transitions = {}
+        # self.input_symbols = set([])
+        # self.final_states = set([])
 
     def add_state(self, pos):
         self.states.add('q' + str(pos))

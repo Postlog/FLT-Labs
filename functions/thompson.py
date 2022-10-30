@@ -1,7 +1,7 @@
 '''Модуль преобразования регулярного выражения в автомат Томпсона'''
 
 from models.regex import Regex, Node
-from models import FiniteAutomaton, FiniteAutomatonIndexed
+from models import FiniteAutomaton, FiniteAutomatonIndexed, EPSILON
 import functions.registry as registry
 
 """
@@ -14,7 +14,7 @@ def __switching_to_fst_branch_if_alt(pos: int, finite_automata: FiniteAutomatonI
     finite_automata.add_state(pos + 1)
     alt_pos = 'q' + str(pos)
     finite_automata.transitions[alt_pos] = {
-        'eps': {'q' + str(pos + 1)}
+        EPSILON: {'q' + str(pos + 1)}
     }
     finite_automata.start_number += 1
     finite_automata.end_number += 1
@@ -33,11 +33,11 @@ def __add_alt_final_states(pos_f: int, fa2: FiniteAutomatonIndexed):
 
     ''' соединеие eps переходами '''
     fa2.transitions['q' + str(pos_f)] = {
-        'eps': {'q' + str(fa2.end_number + 1)}
+        EPSILON: {'q' + str(fa2.end_number + 1)}
     }
 
     fa2.transitions['q' + str(fa2.end_number)] = {
-        'eps': {'q' + str(fa2.end_number + 1)}
+        EPSILON: {'q' + str(fa2.end_number + 1)}
     }
 
     fa2.start_number += 1
@@ -49,29 +49,29 @@ def __add_alt_final_states(pos_f: int, fa2: FiniteAutomatonIndexed):
 
 def __thompson_regex_to_nfa(regex: Node, init_pos: int, finite_automata: FiniteAutomatonIndexed) -> FiniteAutomatonIndexed:
     if regex.value == "|":
-
+        finite_automata.input_symbols.add(EPSILON)
         finite_automata.add_state(init_pos)
         alt_pos, finite_automata = __switching_to_fst_branch_if_alt(init_pos, finite_automata)
         fa1 = __thompson_regex_to_nfa(regex.children[1], finite_automata.start_number, finite_automata)
 
-        st_copy = fa1.start_number
         end_copy = fa1.end_number
 
         fa1.start_number += 1
         fa1.end_number += 1
 
-        fa1.transitions[alt_pos]['eps'].add('q' + str(fa1.end_number))
+        fa1.transitions[alt_pos][EPSILON].add('q' + str(fa1.end_number))
         fa2 = __thompson_regex_to_nfa(regex.children[0], fa1.end_number, fa1)
 
         __add_alt_final_states(end_copy, fa2)
 
     elif regex.value == ".":
+        finite_automata.input_symbols.add(EPSILON)
         fa1 = __thompson_regex_to_nfa(regex.children[1], finite_automata.end_number, finite_automata)
         fa1.final_states.add('q' + str(fa1.end_number))
 
         '''Добавление eps перехода между парсингом РВ'''
         fa1.transitions['q' + str(fa1.end_number)] = {
-            'eps': {'q' + str(fa1.end_number + 1)}
+            EPSILON: {'q' + str(fa1.end_number + 1)}
         }
 
         fa1.start_number += 1
@@ -89,8 +89,10 @@ def __thompson_regex_to_nfa(regex: Node, init_pos: int, finite_automata: FiniteA
         start_copy = finite_automata.start_number
         finish_copy = finite_automata.end_number
 
+        finite_automata.input_symbols.add(EPSILON)
+
         finite_automata.transitions['q' + str(finite_automata.start_number)] = {
-            'eps': {'q' + str(finite_automata.end_number + 1)}
+            EPSILON: {'q' + str(finite_automata.end_number + 1)}
         }
 
         finite_automata.add_state(finite_automata.start_number)
@@ -107,11 +109,11 @@ def __thompson_regex_to_nfa(regex: Node, init_pos: int, finite_automata: FiniteA
         __thompson_regex_to_nfa(regex.children[0], finite_automata.end_number, finite_automata)
 
         finite_automata.transitions['q' + str(finite_automata.end_number)] = {
-            'eps': {'q' + str(finite_automata.end_number + 1)}
+            EPSILON: {'q' + str(finite_automata.end_number + 1)}
         }
 
         '''Обратный eps переход'''
-        finite_automata.transitions['q' + str(finite_automata.end_number)]['eps'].add(
+        finite_automata.transitions['q' + str(finite_automata.end_number)][EPSILON].add(
             'q' + str(s1_copy)
         )
 
@@ -119,7 +121,7 @@ def __thompson_regex_to_nfa(regex: Node, init_pos: int, finite_automata: FiniteA
         finite_automata.end_number += 1
 
         '''eps переход из начала в последнее состояние'''
-        finite_automata.transitions['q' + str(start_copy)]['eps'].add(
+        finite_automata.transitions['q' + str(start_copy)][EPSILON].add(
             'q' + str(finite_automata.end_number)
         )
 
@@ -130,7 +132,7 @@ def __thompson_regex_to_nfa(regex: Node, init_pos: int, finite_automata: FiniteA
 
         finite_automata.add_state(init_pos)
 
-        finite_automata.add_input_symbol(regex)
+        finite_automata.input_symbols.add(regex.value)
 
         finite_automata.transitions['q' + str(finite_automata.start_number)] = {
             regex.value: {'q' + str(finite_automata.end_number + 1)}

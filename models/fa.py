@@ -91,7 +91,7 @@ class FiniteAutomatonIndexed(FiniteAutomaton):
         transitions: dict[str, dict[str, set[str]]],
         start_number: int,
         end_number: int,
-        source_regex: Optional[Regex] = None
+        source_regex: typing.Optional[Regex] = None
     ):
         super().__init__(
             initial_state,
@@ -108,5 +108,3 @@ class FiniteAutomatonIndexed(FiniteAutomaton):
     def add_state(self, pos):
         self.states.add('q' + str(pos))
 
-    def add_input_symbol(self, regex):
-        self.input_symbols.add(regex.value)

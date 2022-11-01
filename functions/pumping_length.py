@@ -2,12 +2,19 @@ from itertools import combinations
 
 from models.regex import Node, NodeType, Regex, RegexParser
 from utils.derivative_utils import DerivativeBrzozovski
+from models.fa import FiniteAutomaton
+from thompson import Thompson
 
-class PumpLength:
-    def count_pump_length(self, regex):
-        for i in range(len(regex)):
-            # строим префикс
-            prefix = self.make_prefix(regex, i)
+def count_pump_length(regex: Regex):
+    automata = Thompson(regex)
+    i = 0
+    pumped_prefixies = set()
+    # for i in range(len(regex_list)):
+    while i < 100:
+        # строим префикс
+        i += 1
+        prefixes = FiniteAutomaton.prefix(automata, i)
+        for prefix in prefixes:
             for symbol in prefix:
                 # берем производную по префиксу
                 derivative_brzozovski = DerivativeBrzozovski(symbol)
@@ -27,9 +34,11 @@ class PumpLength:
                     pumping_regex = pumping_regex_inf[:index] + pumping_part + pumping_regex_inf[index:]
                     regex_to_check = pumping_regex + derivative_reg_with_prefix_regex
                     # проверяем входят ли они в наш язык
-                    sub_set_flag = ksubset(regex_to_check, regex)
-                    if sub_set_flag == True:
-                        return i
+                    if regex_to_check not in pumped_prefixies:
+                        sub_set_flag = ksubset(regex_to_check, regex)
+                        if sub_set_flag:
+                            pumped_prefixies.add(regex_to_check)
+                            return i
 
 
 def tree_to_regex(tree: Node) -> str:

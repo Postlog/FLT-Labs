@@ -1,5 +1,7 @@
 import typing
 
+import graphviz
+
 from models import Regex
 from models.epsilon import EPSILON
 
@@ -79,7 +81,7 @@ class FiniteAutomaton:
     def _get_transitions(self, from_state: str, symbol: str) -> list[str]:
         return list(self.transitions.get(from_state, {}).get(symbol, set()))
 
-    def __repr__(self):
+    def a_step(self) -> graphviz.Digraph:
         return VisualDFA(
             states=self.states,
             input_symbols=self.input_symbols,

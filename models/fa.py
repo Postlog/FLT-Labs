@@ -47,3 +47,16 @@ class FiniteAutomaton:
     @property
     def is_deterministic(self):
         return self._is_deterministic
+
+    @property
+    def simplified_transitions(self) -> dict[str, dict[str, str]]:
+        """Represent transitions as simple DFA transitions."""
+        if not self._is_deterministic:
+            raise TypeError('Simplified transitions are available only for DFA.')
+
+        return {
+            state_from: {
+                label: list(states_to)[0] for label, states_to in
+                self.transitions[state_from].items()
+            } for state_from in self.transitions
+        }

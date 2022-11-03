@@ -11,6 +11,7 @@ class NodeType(Enum):
     ZERO_OR_MORE = 1
     ALT = 2
     SYMBOL = 3
+    EMPTY_SET = 4
 
 
 class Node:
@@ -73,7 +74,7 @@ class RegexParser:
 
                 node_type = NodeType.CONCAT if char == '.' else NodeType.ALT
 
-                last_nodes.append(Node(node_type, char, [a, b]))
+                last_nodes.append(Node(node_type, char, [b, a]))
             elif char == '*':
                 a = _pop(last_nodes)
                 if a is None:

@@ -17,7 +17,7 @@ def parse_flags() -> bool:
         action='store_true',
         dest='use_dynamic_type_checker',
         default=False,
-        help='Использовать динамическую проверку типов вместо статической',
+        help='Использовать динамическую проверку типов вместо статической (тайпчекеры пока не реализованы)',
     )
 
     return parser.parse_args().use_dynamic_type_checker

@@ -18,13 +18,12 @@ def find_all(a_str, sub):
 
 
 # @registry.register(registry.FunctionType.REGULAR)
-def PumpingLength(regex: str) -> int:
-    regex_for_thompson = Regex(regex)
-    nfa = Thompson(regex_for_thompson)
+def PumpingLength(regex: Regex) -> int:
+    nfa = Thompson(regex)
     # преобразование в дка (пока отсутствует)
-    # dfa = minimize(nfa)
-    parsed_regex = RegexParser.parse(regex)
-    orig_tree = parsed_regex
+    # minimized_nfa = minimize(nfa)
+    # dfa = determinize(minimized_nfa)
+    orig_tree = regex.tree
     n = 0
     infix_left = ""
     pumped_flag = False

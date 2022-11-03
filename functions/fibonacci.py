@@ -1,5 +1,6 @@
 from models import Int, FiniteAutomaton
 import functions.registry as registry
+from monoid import monoid
 
 
 @registry.register(registry.FunctionType.REGULAR)
@@ -12,10 +13,3 @@ def fibonacci(n: Int) -> Int:
 
     v1, v2 = fibonacci(Int(n.value - 1)), fibonacci(Int(n.value - 2))
     return Int(v1.value + v2.value)
-
-
-@registry.register(registry.FunctionType.PREDICATE)
-def transition_monoid(fa: FiniteAutomaton) -> None:
-    if not fa.is_deterministic:
-        return
-

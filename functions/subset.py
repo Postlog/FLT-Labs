@@ -1,7 +1,7 @@
 import networkx as nx
 from itertools import product
 
-import registry
+from functions import registry
 from models import FiniteAutomaton, Regex
 
 

@@ -19,3 +19,10 @@ def transition_monoid(fa: FiniteAutomaton) -> None:
     if not fa.is_deterministic:
         return
 
+
+@registry.register(registry.FunctionType.PREDICATE)
+def monoid(fa: FiniteAutomaton) -> None:
+    if not fa.is_deterministic:
+        raise Exception('DFA is not detemenistic')
+    return
+

@@ -3,6 +3,8 @@ import typing
 from models import Regex
 from models.epsilon import EPSILON
 
+from visual_automata.fa.dfa import VisualDFA
+
 
 class FiniteAutomaton:
     """Данный класс представляет конечный автомат. Пример создания экземпляра (DFA)::
@@ -76,3 +78,12 @@ class FiniteAutomaton:
 
     def _get_transitions(self, from_state: str, symbol: str) -> list[str]:
         return list(self.transitions.get(from_state, {}).get(symbol, set()))
+
+    def __repr__(self):
+        return VisualDFA(
+            states=self.states,
+            input_symbols=self.input_symbols,
+            transitions=self.transitions,
+            initial_state=self.initial_state,
+            final_states=self.final_states
+        ).show_diagram()

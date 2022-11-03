@@ -1,0 +1,6 @@
+pip install automata-lib
+pip install pandas
+pip install graphviz
+pip install colormath
+pip install jupyterlab
+pip install visual-automata

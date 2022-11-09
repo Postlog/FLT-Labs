@@ -4,18 +4,21 @@ import networkx as nx
 from models import DFA
 from models.base import Type
 from pydot import Dot, Edge, Node
+from dataclasses import dataclass
+
 
 
 
 class NFA(Type):
+
     def __init__(
         self,
         *,
         initial_state: str,
         states: set[str],
         final_states: set[str],
-        input_symbols: dict,
-        transitions: dict[str, dict[str, str]]
+        input_symbols: set[str],
+        transitions: dict[str, dict[str, set[str]]]
     ):
         self.initial_state = initial_state
         self.final_states = final_states.copy()

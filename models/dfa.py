@@ -15,10 +15,10 @@ class DFA(Type):
         self,
         *,
         initial_state: str,
-        final_states: set[str],
         states: set[str],
-        input_symbols: dict,
-        transitions: dict[str, dict[str, str]]
+        final_states: set[str],
+        input_symbols: set[str],
+        transitions: dict[str, dict[str, set[str]]]
     ):
         self.initial_state = initial_state
         self.final_states = final_states.copy()

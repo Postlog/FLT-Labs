@@ -11,6 +11,7 @@ class NodeType(Enum):
     ZERO_OR_MORE = 1
     ALT = 2
     SYMBOL = 3
+    EMPTY_SET = 4
 
 
 class Node:
@@ -73,7 +74,7 @@ class RegexParser:
 
                 node_type = NodeType.CONCAT if char == '.' else NodeType.ALT
 
-                last_nodes.append(Node(node_type, char, [a, b]))
+                last_nodes.append(Node(node_type, char, [b, a]))
             elif char == '*':
                 a = _pop(last_nodes)
                 if a is None:
@@ -142,12 +143,17 @@ class RegexParser:
 
 
 class Regex(Type):
-    def __init__(self, tree: Node):
+    def __init__(self, tree: Node, source_str: str):
         self._tree = tree
+        self._source_str = source_str
 
     @property
     def tree(self) -> Node:
         return self._tree
+
+    @property
+    def source_str(self):
+        return self._source_str
 
 
 def _peek(lst: list[typing.Any]) -> typing.Optional[typing.Any]:

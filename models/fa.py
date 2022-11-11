@@ -104,7 +104,5 @@ class FiniteAutomatonIndexed(FiniteAutomaton):
         self.start_number = start_number
         self.end_number = end_number
 
-
     def add_state(self, pos):
         self.states.add('q' + str(pos))
-

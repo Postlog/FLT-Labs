@@ -16,26 +16,14 @@ class NodeType(Enum):
 
 class Node:
     def __init__(self, node_type: NodeType, value: str, children: list[Node]):
-        self._node_type = node_type
-        self._value = value
-        self._children = children
-
-    @property
-    def node_type(self):
-        return self._node_type
-
-    @property
-    def value(self):
-        return self._value
-
-    @property
-    def children(self):
-        return self._children
+        self.node_type = node_type
+        self.value = value
+        self.children = children
 
     def __repr__(self):
         value_repr = ''
         if self.node_type == NodeType.SYMBOL:
-            value_repr = f'({self._value})'
+            value_repr = f'({self.value})'
 
         return f'{self.node_type.name}{value_repr}: [{", ".join(c.node_type.name for c in self.children)}]'
 

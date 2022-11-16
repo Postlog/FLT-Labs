@@ -122,7 +122,7 @@ class Parser:
                 tree = RegexParser.parse(token.image)
             except RegexSyntaxError as e:
                 raise CustomSyntaxError(str(e))
-            argument = Constant(Regex(tree))
+            argument = Constant(Regex(tree=tree, source_str=token.image))
         elif token.tag == Tag.NUMBER:
             argument = Constant(Int(int(token.image)))
         elif token.tag == Tag.VARIABLE_NAME:

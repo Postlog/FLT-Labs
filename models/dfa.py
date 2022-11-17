@@ -6,10 +6,6 @@ from itertools import product
 from collections import deque
 
 
-
-
-
-
 class DFA(Type):
     def __init__(
         self,

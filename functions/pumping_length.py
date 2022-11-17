@@ -5,6 +5,7 @@ from models.fa import FiniteAutomaton
 from models.int import Int
 from thompson import Thompson
 from utils.derivative_utils import DerivativeBrzozovski, tree_to_regex
+from subset import subset
 # import functions.registry as registry
 
 
@@ -24,6 +25,7 @@ def PumpingLength(regex: Regex) -> int:
     # minimized_nfa = minimize(nfa)
     # dfa = determinize(minimized_nfa)
     orig_tree = regex.tree
+
     n = 0
     infix_left = ""
     pumped_flag = False
@@ -62,7 +64,7 @@ def PumpingLength(regex: Regex) -> int:
                                 pumped_flag = True
                             else:
                                 # проверка на пересечение накачимаевого слова и изначального регулярного выражения (пока отсутствует)
-                                # pumped_flag = ksubset(regex_to_check, parsed_regex)
+                                pumped_flag = subset(regex_to_check, regex)
                         # добавляем накачиваемый префикс для дальнейшей оптимизации
                         if pumped_flag:
                             pumping_prefixes.add(prefix)

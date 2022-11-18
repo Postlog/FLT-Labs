@@ -1,5 +1,6 @@
-from models import Int
+from models import Int, FiniteAutomaton
 import functions.registry as registry
+from monoid import monoid
 
 
 @registry.register(registry.FunctionType.REGULAR)

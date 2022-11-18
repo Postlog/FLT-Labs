@@ -49,7 +49,6 @@ class NFA(Type):
         )
 
     def __or__(self, other):
-        """Return the union of this NFA and another NFA."""
         if isinstance(other, NFA):
             return self.union(other)
         else:
@@ -60,7 +59,6 @@ class NFA(Type):
 
     @classmethod
     def from_dfa(cls, dfa):
-        """Initialize this NFA as one equivalent to the given DFA."""
         nfa_transitions = {}
 
         for start_state, paths in dfa.transitions.items():
@@ -74,7 +72,6 @@ class NFA(Type):
             final_states=dfa.final_states)
 
     def _get_next_current_states(self, current_states, input_symbol):
-        """Return the next set of current states given the current set."""
         next_current_states = set()
 
         for current_state in current_states:
@@ -89,18 +86,9 @@ class NFA(Type):
         return next_current_states
 
     def _get_lambda_closure(self, start_state):
-        """
-        Return the lambda closure for the given state.
-
-        The lambda closure of a state q is the set containing q, along with
-        every state that can be reached from q by following only lambda
-        transitions.
-        """
-
         return self._lambda_closure_dict[start_state]
 
     def _get_next_current_states2(self, current_states, input_symbol):
-        """Return the next set of current states given the current set."""
         next_current_states = set()
 
         for current_state in current_states:
@@ -113,7 +101,6 @@ class NFA(Type):
         return next_current_states
 
     def _remove_unreachable_states(self):
-        """Remove states which are not reachable from the initial state."""
         reachable_states = self._compute_reachable_states()
         unreachable_states = self.states - reachable_states
         for state in unreachable_states:
@@ -123,7 +110,6 @@ class NFA(Type):
                 self.final_states.remove(state)
 
     def _compute_reachable_states(self):
-        """Compute the states which are reachable from the initial state."""
         graph = nx.DiGraph([
             (start_state, end_state)
             for start_state, transition in self.transitions.items()
@@ -135,7 +121,6 @@ class NFA(Type):
         return nx.descendants(graph, self.initial_state) | {self.initial_state}
 
     def _remove_empty_transitions(self):
-        """Deletes transitions to empty set of states"""
         to_delete_sym = {}
         for state in self.transitions.keys():
             for input_symbol, to_states in self.transitions[state].items():
@@ -154,7 +139,6 @@ class NFA(Type):
                 del self.transitions[state]
 
     def eliminate_lambda(self):
-        """Removes epsilon transitions from the NFA which recognizes the same language."""
         for state in self.states:
             lambda_enclosure = self._lambda_closure_dict[state] - {state}
             for input_symbol in self.input_symbols:
@@ -187,7 +171,6 @@ class NFA(Type):
             for state in self.states
         }
 
-
     def determinize(self):
         self.eliminate_lambda()
         return DFA.from_nfa(self)
@@ -195,14 +178,8 @@ class NFA(Type):
     def minimize(self):
         return DFA.minify(self.determinize())
 
-
-
     @staticmethod
     def _get_state_maps(state_set_a, state_set_b, *, start=0):
-        """
-        Generate state map dicts from given sets. Useful when the state set has
-        to be a union of the state sets of component FAs.
-        """
 
         state_map_a = {
             state: i
@@ -217,11 +194,7 @@ class NFA(Type):
         return (state_map_a, state_map_b)
 
     def union(self, other):
-        """
-        Given two NFAs, M1 and M2, which accept the languages
-        L1 and L2 respectively, returns an NFA which accepts
-        the union of L1 and L2.
-        """
+
         if not isinstance(other, NFA):
             raise NotImplementedError
 
@@ -260,10 +233,6 @@ class NFA(Type):
         )
 
     def reverse(self):
-        """
-        Given an NFA which accepts the language L this function
-        returns an NFA which accepts the reverse of L.
-        """
         new_states = set(self.states)
         new_initial_state = NFA._add_new_state(new_states)
 
@@ -297,10 +266,7 @@ class NFA(Type):
     def _load_new_transition_dict(state_map_dict,
                                   old_transition_dict,
                                   new_transition_dict):
-        """
-        Load the new_transition_dict with the old transitions corresponding to
-        the given state_map_dict.
-        """
+
 
         for state_a, transitions in old_transition_dict.items():
             for symbol, states in transitions.items():
@@ -310,7 +276,6 @@ class NFA(Type):
 
     @staticmethod
     def _add_new_state(state_set, start=0):
-        """Adds new state to the state set and returns it"""
         new_state = start
         while new_state in state_set:
             new_state += 1
@@ -318,36 +283,4 @@ class NFA(Type):
         state_set.add(new_state)
 
         return new_state
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

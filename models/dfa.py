@@ -27,7 +27,6 @@ class DFA(Type):
         self.transitions = copy.deepcopy(transitions)
 
     def copy(self):
-        """Create a deep copy of the NFA. Overrides copy in base class due to extra parameter."""
         return self.__class__(
             states=self.states,
             input_symbols=self.input_symbols,
@@ -37,53 +36,40 @@ class DFA(Type):
         )
 
     def __sub__(self, other):
-        """Return a DFA that is the difference of this DFA and another DFA."""
         if isinstance(other, DFA):
             return self.difference(other)
         else:
             raise NotImplementedError
 
     def __xor__(self, other):
-        """Return the symmetric difference of this DFA and another DFA."""
         if isinstance(other, DFA):
             return self.symmetric_difference(other)
         else:
             raise NotImplementedError
 
     def __or__(self, other):
-        """Return the union of this DFA and another DFA."""
         if isinstance(other, DFA):
             return self.union(other)
         else:
             raise NotImplementedError
 
     def __and__(self, other):
-        """Return the intersection of this DFA and another DFA."""
         if isinstance(other, DFA):
             return self.intersection(other)
         else:
             raise NotImplementedError
 
     def __invert__(self):
-        """Return the complement of this DFA and another DFA."""
         return self.complement()
 
     def minify(self, retain_names=True):
-        """
-        Create a minimal DFA which accepts the same inputs as this DFA.
 
-        First, non-reachable states are removed.
-        Then, similiar states are merged using Hopcroft's Algorithm.
-            retain_names: If True, merged states retain names.
-                          If False, new states will be named 0, ..., n-1.
-        """
         new_dfa = self.copy()
         new_dfa._remove_unreachable_states()
         new_dfa._merge_states(retain_names=retain_names)
         return new_dfa
 
     def _get_digraph(self) -> nx.DiGraph:
-        """Return a digraph corresponding to this DFA with transition symbols ignored"""
         return nx.DiGraph([
             (start_state, end_state)
             for start_state, transition in self.transitions.items()
@@ -91,12 +77,10 @@ class DFA(Type):
         ])
 
     def _compute_reachable_states(self):
-        """Compute the states which are reachable from the initial state."""
         G = self._get_digraph()
         return nx.descendants(G, self.initial_state) | {self.initial_state}
 
     def _remove_unreachable_states(self):
-        """Remove states which are not reachable from the initial state."""
         reachable_states = self._compute_reachable_states()
         unreachable_states = self.states - reachable_states
         for state in unreachable_states:
@@ -190,10 +174,7 @@ class DFA(Type):
         self.final_states = new_final_states
 
     def _cross_product(self, other):
-        """
-        Creates a new DFA which is the cross product of DFAs self and other
-        with an empty set of final states.
-        """
+
 
         new_states = {
             self._stringify_states_unsorted((a, b))
@@ -222,11 +203,7 @@ class DFA(Type):
         )
 
     def union(self, other, *, retain_names=False, minify=True):
-        """
-        Takes as input two DFAs M1 and M2 which
-        accept languages L1 and L2 respectively.
-        Returns a DFA which accepts the union of L1 and L2.
-        """
+
         new_dfa = self._cross_product(other)
 
         new_dfa.final_states = {
@@ -240,11 +217,7 @@ class DFA(Type):
         return new_dfa
 
     def intersection(self, other, *, retain_names=False, minify=True):
-        """
-        Takes as input two DFAs M1 and M2 which
-        accept languages L1 and L2 respectively.
-        Returns a DFA which accepts the intersection of L1 and L2.
-        """
+
         new_dfa = self._cross_product(other)
 
         new_dfa.final_states = {
@@ -257,11 +230,7 @@ class DFA(Type):
         return new_dfa
 
     def difference(self, other, *, retain_names=False, minify=True):
-        """
-        Takes as input two DFAs M1 and M2 which
-        accept languages L1 and L2 respectively.
-        Returns a DFA which accepts the difference of L1 and L2.
-        """
+
         new_dfa = self._cross_product(other)
 
         new_dfa.final_states = {
@@ -274,11 +243,7 @@ class DFA(Type):
         return new_dfa
 
     def symmetric_difference(self, other, *, retain_names=False, minify=True):
-        """
-        Takes as input two DFAs M1 and M2 which
-        accept languages L1 and L2 respectively.
-        Returns a DFA which accepts the symmetric difference of L1 and L2.
-        """
+
         new_dfa = self._cross_product(other)
         new_dfa.final_states = {
             self._stringify_states_unsorted((state_a, state_b))
@@ -291,24 +256,20 @@ class DFA(Type):
         return new_dfa
 
     def complement(self):
-        """Return the complement of this DFA."""
         new_dfa = self.copy()
         new_dfa.final_states ^= self.states
         return new_dfa
 
     @staticmethod
     def _stringify_states_unsorted(states):
-        """Stringify the given set of states as a single state name."""
         return '{{{}}}'.format(','.join(states))
 
     @staticmethod
     def _stringify_states(states):
-        """Stringify the given set of states as a single state name."""
         return '{{{}}}'.format(','.join(sorted(str(state) for state in states)))
 
     @classmethod
     def from_nfa(cls, target_nfa):
-        """Initialize this DFA as one equivalent to the given NFA."""
         dfa_states = set()
         dfa_symbols = target_nfa.input_symbols
         dfa_transitions = dict()
@@ -344,19 +305,3 @@ class DFA(Type):
             states=dfa_states, input_symbols=dfa_symbols,
             transitions=dfa_transitions, initial_state=dfa_initial_state,
             final_states=dfa_final_states)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

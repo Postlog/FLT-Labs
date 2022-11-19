@@ -2,6 +2,7 @@ import typing
 
 from models import Regex
 from models.epsilon import EPSILON
+from models.dfa import DFA
 
 
 class FiniteAutomaton:
@@ -48,24 +49,22 @@ class FiniteAutomaton:
     def is_deterministic(self):
         return self._is_deterministic
 
-    def prefix(self, length: int, state: typing.Optional[str] = None) -> set[str]:
-        if not self.is_deterministic:
-            raise TypeError('Невозможно посчитать префикс для НКА')
-
+    @staticmethod
+    def prefix(dfa: DFA, length: int, state: typing.Optional[str] = None) -> set[str]:
         if length <= 0:
             return set()
 
         if state is None:
-            state = self.initial_state
+            state = dfa.initial_state
 
         prefixes: set[str] = set()
-        for symbol in self.input_symbols:
-            next_states = self._get_transitions(state, symbol)
+        for symbol in dfa.input_symbols:
+            next_states = FiniteAutomaton.get_transitions(dfa, state, symbol)
 
             if len(next_states) == 0:
                 continue
 
-            next_prefixes = self.prefix(length - 1, next_states[0])
+            next_prefixes = FiniteAutomaton.prefix(dfa, length - 1, next_states[0])
             if len(next_prefixes) > 0:
                 for next_prefix in next_prefixes:
                     prefixes.add(symbol + next_prefix)
@@ -74,8 +73,9 @@ class FiniteAutomaton:
 
         return prefixes
 
-    def _get_transitions(self, from_state: str, symbol: str) -> list[str]:
-        return list(self.transitions.get(from_state, {}).get(symbol, set()))
+    @staticmethod
+    def get_transitions(dfa: DFA, from_state: str, symbol: str) -> list[str]:
+        return list(dfa.transitions.get(from_state, {}).get(symbol, set()))
 
 
 class FiniteAutomatonIndexed(FiniteAutomaton):

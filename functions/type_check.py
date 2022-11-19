@@ -24,7 +24,7 @@ def is_regex_equal(regex1: Regex, regex2: Regex) -> bool:
     raise NotImplementedError
 
 
-def remove_optional_functions(actions: [Action]) -> [Action]:
+def remove_optional_functions(actions: [Action]) -> None:
     for action_index, action in enumerate(actions):
         if isinstance(action, AssignmentAction):
             functions = action.functions
@@ -80,7 +80,7 @@ def remove_optional_functions(actions: [Action]) -> [Action]:
                     print(f'removed function {func.__name__}')
 
             new_functions3.reverse()
-            actions[action_index] = new_functions3
+            actions[action_index].functions = new_functions3
 
 
 def get_types(func: callable) -> tuple[list, list]:

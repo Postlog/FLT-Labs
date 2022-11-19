@@ -1,4 +1,5 @@
 import typing
+from collections import defaultdict
 
 from models import Regex
 from models.epsilon import EPSILON
@@ -18,6 +19,7 @@ class FiniteAutomaton:
             final_states={'q0', 'q1'}
         )
     """
+    MEMORY: dict[str, list['FiniteAutomaton']] = defaultdict(list)
 
     def __init__(
         self,
@@ -43,6 +45,9 @@ class FiniteAutomaton:
 
         if not self._is_deterministic and source_regex is None:
             raise ValueError('Нужно указать объект Regex из которого НКА был создан')
+
+        if not self._is_deterministic:
+            FiniteAutomaton.MEMORY[source_regex.source_str].append(self)
 
     @property
     def is_deterministic(self):

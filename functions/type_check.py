@@ -29,8 +29,9 @@ def remove_optional_functions(actions: [Action]) -> None:
         if isinstance(action, AssignmentAction):
             functions = action.functions
             functions.reverse()
-            decision = [1 for _ in range(len(functions))]  # 0 - удалить # 1 - оставить
 
+            # случай для функций из первой группы
+            decision = [1 for _ in range(len(functions))]  # 0 - удалить # 1 - оставить
             for index, func in enumerate(functions):
                 if index == 0:
                     continue
@@ -46,6 +47,7 @@ def remove_optional_functions(actions: [Action]) -> None:
                 else:
                     print(f'removed function {func.__name__}')
 
+            # случай для функций из второй группы
             decision = [1 for _ in range(len(new_functions1))]
             for index, func in enumerate(new_functions1):
                 if index == 0:
@@ -63,6 +65,7 @@ def remove_optional_functions(actions: [Action]) -> None:
                 else:
                     print(f'removed function {func.__name__}')
 
+            # случай для функций из 3 группы
             decision = [1 for _ in range(len(new_functions2))]
             for index, func in enumerate(new_functions2):
                 if index == 0:

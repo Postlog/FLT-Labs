@@ -2,15 +2,11 @@ from itertools import combinations
 
 from models.regex import Node, NodeType, Regex, RegexParser
 from models.fa import FiniteAutomaton
-from models.int import Int
 from functions.thompson import Thompson
-# from derivative.derivative_utils import DerivativeBrzozovski, tree_to_regex
 from derivative.derivatives import derivative_regex_brzozovski
 from derivative.utils import tree_to_regex
 from functions.subset import subset
-# import functions.registry as registry
 from models.nfa import NFA
-import numpy as np
 
 def find_all(a_str, sub):
     start = 0
@@ -24,9 +20,6 @@ def find_all(a_str, sub):
 # @registry.register(registry.FunctionType.REGULAR)
 def PumpingLength(regex: Regex) -> int:
     fa = Thompson(regex)
-    print(fa.initial_state)
-    # преобразование в дка (пока отсутствует)
-    # minimized_nfa = minimize(nfa)
     nfa = NFA(
         initial_state=fa.initial_state,
         states=fa.states,
@@ -35,30 +28,34 @@ def PumpingLength(regex: Regex) -> int:
         transitions=fa.transitions
     )
     dfa = nfa.determinize()
-    print(dfa)
     orig_tree = regex.tree
-    # ab*
-    n = 1
+    n = 3
     infix_left = ""
     pumped_flag = False
     pumping_prefixes = set()
-    while n < 4:
+    # while n < 4:
+    for n in range(3):
+        n+=1
         # строим префикс длины n
         # данный блок с накачкой префиксов готов
         prefixes = FiniteAutomaton.prefix(dfa, n)
+        prefixes = ['abb', 'aaa']
+
         all_prefixes_pumped = True
         for prefix in prefixes:
             tree = orig_tree
+            print("prefix, n:", prefix, n)
             for symbol in prefix:
                 derivative_brzozovski = tree
                 # берем производную по префиксу
-                # derivative_brzozovski = DerivativeBrzozovski(symbol)
                 derivative_brzozovski = derivative_regex_brzozovski(symbol, derivative_brzozovski)
-                derivative_reg_with_prefix = derivative_brzozovski.get_derivative(tree)
-                derivative_reg_with_prefix_regex = tree_to_regex(derivative_reg_with_prefix)
-                tree = derivative_reg_with_prefix
+                # derivative_reg_with_prefix = derivative_brzozovski.get_derivative(tree)
+                derivative_reg_with_prefix_regex = tree_to_regex(derivative_brzozovski)
+                print('der:', prefix, derivative_reg_with_prefix_regex)
+                tree = derivative_brzozovski
             comb = combinations(prefix, n)
             infixes_list = set([''.join(i) for i in comb])
+            print('infixes_list:', infixes_list)
             # перебираем все инфиксы по префиксу
             for infix in infixes_list:
                 if infix != prefix:
@@ -74,20 +71,23 @@ def PumpingLength(regex: Regex) -> int:
                         str_to_check = pumping_regex + derivative_reg_with_prefix_regex
                         tree_to_check = RegexParser.parse(str_to_check)
                         regex_to_check = Regex(tree_to_check, str_to_check)
+                        print('regex to check:', regex_to_check.source_str)
                         # оптимизируем перебор, проверяя, если наш префикс начинается с накачиваемого префикса
-                        for pumping_prefix in pumping_prefixes:
-                            if regex_to_check.source_str.startswith(pumping_prefix):
-                                pumped_flag = True
-                            else:
+                        # for pumping_prefix in pumping_prefixes:
+                        #     if regex_to_check.source_str.startswith(pumping_prefix):
+                        #         pumped_flag = True
+                        #         print(pumped_flag)
+                        #     else:
                                 # проверка на пересечение накачимаевого слова и изначального регулярного выражения (пока отсутствует)
-                                pumped_flag = subset(regex_to_check, regex)
-                                print(pumped_flag)
+                        pumped_flag = subset(regex_to_check, regex)
+                        print('pumped flag:', pumped_flag)
                         # добавляем накачиваемый префикс для дальнейшей оптимизации
                         if pumped_flag:
                             pumping_prefixes.add(prefix)
                         else:
                             all_prefixes_pumped = False
                 if all_prefixes_pumped:
+                    print(n)
                     return n
                 else:
                     n += 1

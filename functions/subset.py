@@ -7,6 +7,7 @@ from functions import registry
 from functions.determinize import determinize
 from functions.thompson import Thompson
 from models import FiniteAutomaton, Regex
+from models.nfa import NFA
 
 
 @registry.register(registry.FunctionType.PREDICATE)

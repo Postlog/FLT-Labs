@@ -3,6 +3,7 @@ from copy import deepcopy
 from executor import execute
 from logger import logger
 
+
 def main():
     try:
         execute()
@@ -12,4 +13,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -1,20 +1,89 @@
 import typing
-from input.models import Action, AssignmentAction, ExtraAction, PredicateAction
+from input.models import Action, AssignmentAction, PredicateAction
 from models.fa import FiniteAutomaton
 from models.regex import Regex
-from copy import deepcopy
+
+
+GROUP1 = ['minimize', 'annote', 'de_annote', 'mergebisim', 'de_liniarize', 'linearize', 're_meps']
+GROUP2 = ['complement', 'reverse']
+GROUP3 = ['determinize']
 
 
 def is_nfa_equal(nfa1: FiniteAutomaton, nfa2: FiniteAutomaton) -> bool:
+    # кто-то (не я) должен был реализовать это:)
     raise NotImplementedError
 
 
 def is_dfa_equal(dfa1: FiniteAutomaton, dfa2: FiniteAutomaton) -> bool:
+    # кто-то (не я) должен был реализовать это:)
     raise NotImplementedError
 
 
 def is_regex_equal(regex1: Regex, regex2: Regex) -> bool:
+    # кто-то (не я) должен был реализовать это:)
     raise NotImplementedError
+
+
+def remove_optional_functions(actions: [Action]) -> None:
+    for action_index, action in enumerate(actions):
+        if isinstance(action, AssignmentAction):
+            functions = action.functions
+            functions.reverse()
+
+            # случай для функций из первой группы
+            decision = [1 for _ in range(len(functions))]  # 0 - удалить # 1 - оставить
+            for index, func in enumerate(functions):
+                if index == 0:
+                    continue
+                curr_func = func
+                prev_func = functions[index - 1]
+                if curr_func.__name__ == prev_func.__name__ and curr_func.__name__ in GROUP1:
+                    decision[index - 1] = 0
+
+            new_functions1 = []
+            for index, func in enumerate(functions):
+                if decision[index]:
+                    new_functions1.append(func)
+                else:
+                    print(f'removed function {func.__name__}')
+
+            # случай для функций из второй группы
+            decision = [1 for _ in range(len(new_functions1))]
+            for index, func in enumerate(new_functions1):
+                if index == 0:
+                    continue
+                curr_func = func
+                prev_func = new_functions1[index - 1]
+                if curr_func.__name__ in GROUP2 and prev_func.__name__ == curr_func.__name__:
+                    decision[index] = 0
+                    decision[index - 1] = 0
+
+            new_functions2 = []
+            for index, func in enumerate(new_functions1):
+                if decision[index]:
+                    new_functions2.append(func)
+                else:
+                    print(f'removed function {func.__name__}')
+
+            # случай для функций из 3 группы
+            decision = [1 for _ in range(len(new_functions2))]
+            for index, func in enumerate(new_functions2):
+                if index == 0:
+                    continue
+                curr_func = func
+                prev_func = new_functions2[index - 1]
+                if curr_func.__name__ in GROUP3 and prev_func.__name__ == 'thompson':
+                    decision[index] = 0
+
+            new_functions3 = []
+            for index, func in enumerate(new_functions2):
+                if decision[index]:
+                    new_functions3.append(func)
+                else:
+                    print(f'removed function {func.__name__}')
+
+            new_functions3.reverse()
+            actions[action_index].functions = new_functions3
 
 
 def get_types(func: callable) -> tuple[list, list]:
@@ -70,9 +139,10 @@ def dynamic_check(func: callable, *args, **kwargs) -> None:
 
 
 def static_check(actions: [Action]) -> None:
-    final_actions = deepcopy(actions)
+    # final_actions = deepcopy(actions)
     variables = {}
     # тут должен быть алгоритм, который убирает лишние функции
+    remove_optional_functions(actions)
 
     for action_index, action in enumerate(actions):  # итерируемся по действиям
 

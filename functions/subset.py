@@ -1,3 +1,5 @@
+from typing import Union
+
 import networkx as nx
 from itertools import product
 
@@ -5,10 +7,11 @@ from functions import registry
 from functions.determinize import determinize
 from functions.thompson import Thompson
 from models import FiniteAutomaton, Regex
+from models.nfa import NFA
 
 
 @registry.register(registry.FunctionType.PREDICATE)
-def subset(self: FiniteAutomaton | Regex, other: FiniteAutomaton | Regex) -> bool:
+def subset(self: Union[FiniteAutomaton, Regex], other: Union[FiniteAutomaton, Regex]) -> bool:
     """Проверить, является ли первый НКА/регулярка подмножеством второго НКА/регулярки."""
     if type(self) != type(other) or type(self) not in (FiniteAutomaton, Regex):
         raise ValueError(

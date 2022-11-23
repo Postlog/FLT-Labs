@@ -77,6 +77,14 @@ class FiniteAutomaton:
     def _get_transitions(self, from_state: str, symbol: str) -> list[str]:
         return list(self.transitions.get(from_state, {}).get(symbol, set()))
 
+    def __str__(self):
+        return (
+            f'Начальное состояние - {self.initial_state}\n'
+            f'Состояния автомата - {self.states}\n'
+            f'Конечные состояния - {self.final_states}\n'
+            f'Алфавит - {self.input_symbols}\n'
+            f'Переходы - {self.transitions}\n'
+        )
 
 class FiniteAutomatonIndexed(FiniteAutomaton):
     start_number: int
@@ -107,4 +115,3 @@ class FiniteAutomatonIndexed(FiniteAutomaton):
 
     def add_state(self, pos):
         self.states.add('q' + str(pos))
-

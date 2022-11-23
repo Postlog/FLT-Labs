@@ -6,9 +6,11 @@ from functions.determinize import determinize
 from functions.thompson import Thompson
 from models import FiniteAutomaton, Regex
 
+from graphviz import Digraph
+
 
 @registry.register(registry.FunctionType.PREDICATE)
-def subset(self: FiniteAutomaton | Regex, other: FiniteAutomaton | Regex) -> bool:
+def subset(self: FiniteAutomaton | Regex, other: FiniteAutomaton | Regex) -> (bool, list):
     """Проверить, является ли первый НКА/регулярка подмножеством второго НКА/регулярки."""
     if type(self) != type(other) or type(self) not in (FiniteAutomaton, Regex):
         raise ValueError(
@@ -26,12 +28,12 @@ def subset(self: FiniteAutomaton | Regex, other: FiniteAutomaton | Regex) -> boo
         other = determinize(other)
 
     # self and other are DFAs by here
-    self, other = _unify(self, other)
-    for (state_a, state_b) in _get_product_reachable_states(self, other):
-        if state_a in self.final_states and state_b not in other.final_states:
-            return False
+    self, other, steps = _unify(self, other)
+    # for (state_a, state_b) in _get_product_reachable_states(self, other):
+    #     if state_a in self.final_states and state_b not in other.final_states:
+    #         return False
 
-    return True
+    return True, steps
 
 
 def _get_product_reachable_states(self: FiniteAutomaton, other: FiniteAutomaton) -> set[str]:
@@ -63,8 +65,10 @@ def _simplify_transitions(transitions: dict[str, dict[str, set[str]]]) -> dict[s
 
 def _unify(
     self: FiniteAutomaton, other: FiniteAutomaton
-) -> tuple[FiniteAutomaton, FiniteAutomaton]:
+) -> tuple[FiniteAutomaton, FiniteAutomaton, list[Digraph]]:
     # Do not use on NFAs
+    steps = [self.a_step(), other.a_step()]
+
     alphabet = {
         symbol
         for automaton in (self, other)
@@ -79,11 +83,15 @@ def _unify(
             for symbol in alphabet:
                 if symbol not in state_table:
                     _overwrite_transition(automaton, state_from, symbol, TRAP)
+                    steps.append(automaton.a_step())
         for symbol in alphabet:
             _overwrite_transition(automaton, TRAP, symbol, TRAP)
             automaton.transitions[TRAP][symbol] = {TRAP}
 
-    return self, other
+    steps.append(self.a_step())
+    steps.append(other.a_step())
+
+    return self, other, steps
 
 
 def _overwrite_transition(self: FiniteAutomaton, state_from: str, symbol: str, state_to: str):

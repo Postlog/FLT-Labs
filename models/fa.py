@@ -1,8 +1,13 @@
 import typing
 from collections import defaultdict
 
+import graphviz
+
 from models import Regex
 from models.epsilon import EPSILON
+
+from visual_automata.fa.dfa import VisualDFA
+import random
 
 
 class FiniteAutomaton:
@@ -81,6 +86,22 @@ class FiniteAutomaton:
 
     def _get_transitions(self, from_state: str, symbol: str) -> list[str]:
         return list(self.transitions.get(from_state, {}).get(symbol, set()))
+
+    def a_step(self) -> graphviz.Digraph:
+        transitions = dict()
+        for k1, v1 in self.transitions.items():
+            transitions[k1] = dict()
+            for k2, v2 in self.transitions[k1].items():
+                s = random.sample(self.transitions[k1][k2], 1)
+                transitions[k1][k2] = s.pop()
+
+        return VisualDFA(
+            states=self.states,
+            input_symbols=self.input_symbols,
+            transitions=transitions,
+            initial_state=self.initial_state,
+            final_states=self.final_states
+        ).show_diagram()
 
 
 class FiniteAutomatonIndexed(FiniteAutomaton):

@@ -364,8 +364,10 @@ if __name__ == "__main__":
 
     #1.Детерминизация
     # check = DFA.normalize_answer(NFA.determinize(nfa))
+
     #2.Удаление эпсилон правил
     # NFA.eliminate_lambda(nfa)
+    # print(nfa)
 
     #3.Минимизация
     # check = DFA.normalize_answer(NFA.minimize(nfa))
@@ -373,5 +375,5 @@ if __name__ == "__main__":
     #4.Обратный автомат
     # check = NFA.reverse(nfa)
 
-
     # print(check)
+

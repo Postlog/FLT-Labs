@@ -49,6 +49,8 @@ class FiniteAutomaton:
         if not self._is_deterministic:
             FiniteAutomaton.MEMORY[source_regex.source_str].append(self)
 
+
+
     @property
     def is_deterministic(self):
         return self._is_deterministic

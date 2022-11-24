@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 
 
+
 class NFA(Type):
 
     def __init__(
@@ -53,6 +54,8 @@ class NFA(Type):
             initial_state=self.initial_state,
             final_states=self.final_states
         )
+
+
 
     def __or__(self, other):
         if isinstance(other, NFA):
@@ -309,12 +312,21 @@ class NFA(Type):
 
         return new_state
 
+    def __str__(self):
+        return (
+            f'Начальное состояние - {self.initial_state}\n'
+            f'Состояния автомата - {self.states}\n'
+            f'Конечные состояния - {self.final_states}\n'
+            f'Алфавит - {self.input_symbols}\n'
+            f'Переходы - {self.transitions}\n'
+        )
+
 
 
 if __name__ == "__main__":
     #ввод регулярки и построение автомата
     from functions.thompson import Thompson
-    string = '(ab*)|c'
+    string = 'a(b)*(b)*'
     tree = RegexParser().parse(string)
     regex = Regex(tree, string)
     fa = Thompson(regex)
@@ -348,19 +360,18 @@ if __name__ == "__main__":
         final_states=fa.final_states
     )
 
-
     #Методы
 
     #1.Детерминизация
-    # check = NFA.normalize_answer(NFA.determinize(nfa))
-
+    # check = DFA.normalize_answer(NFA.determinize(nfa))
     #2.Удаление эпсилон правил
     # NFA.eliminate_lambda(nfa)
 
     #3.Минимизация
-    # check = NFA.normalize_answer(NFA.minimize(nfa))
+    # check = DFA.normalize_answer(NFA.minimize(nfa))
 
     #4.Обратный автомат
     # check = NFA.reverse(nfa)
 
 
+    # print(check)

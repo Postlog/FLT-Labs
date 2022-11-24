@@ -31,6 +31,30 @@ class DFA(Type):
             final_states=self.final_states
         )
 
+    def normalize_answer(self):
+        for symbol in self.states:
+            if symbol == '{}':
+                self.states.remove(symbol)
+                break
+        copy_dict = copy.deepcopy(self.transitions)
+        for transitions in self.transitions.keys():
+            for key in self.transitions[transitions].keys():
+                if self.transitions[transitions].get(key) == '{}':
+                    del copy_dict[transitions][key]
+                else:
+                    continue
+        self.transitions = {k: v for k, v in copy_dict.items() if len(v) != 0}
+        return self
+
+    def __str__(self):
+        return (
+            f'Начальное состояние - {self.initial_state}\n'
+            f'Состояния автомата - {self.states}\n'
+            f'Конечные состояния - {self.final_states}\n'
+            f'Алфавит - {self.input_symbols}\n'
+            f'Переходы - {self.transitions}\n'
+        )
+
     def __sub__(self, other):
         if isinstance(other, DFA):
             return self.difference(other)

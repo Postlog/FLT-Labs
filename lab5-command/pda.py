@@ -65,3 +65,51 @@ class PDA:
                     self.inits.update(block['nodes'])
                 if ('trap_flag',) in flags:
                     self.traps.update(block['nodes'])
+
+    def get_graphviz_notation(self):
+        lp = '{'
+        rp = '}'
+        quote = '"'
+        nl = '\n'
+        strings = set()
+        strings.update([
+            f'{node};'
+            for node in self.nodes
+        ])
+        strings.update([
+            f'{node} [label="{label}"];'
+            for node, label in self.labels.items()
+        ])
+        strings.update([
+            f'{node} [color="green"];'
+            for node in self.inits
+        ])
+        strings.update([
+            f'{node} [fontcolor="red"];'
+            for node in self.traps
+        ])
+        for transit in self.transits:
+            ids = f'{transit.node_from} -> {transit.node_to}'
+            if ("stack_independency_flag",) in transit.flags:
+                optional = f"arrowhead={quote}dot{quote}"
+            else:
+                optional = f'label="{transit.alphabeth_symbol}, [{transit.stack_pop_symbol}/{",".join(transit.stack_push_symbols)}]"'
+            if ('deterministic_flag',) in transit.flags:
+                optional += ' penwidth="2.5"'
+            strings.add(f'{ids} [{optional}]')
+        print('nodes', self.nodes)
+        return f'''
+digraph G {lp}
+    {f"node [shape = doublecircle]; {', '.join([quote + node + quote for node in self.finals])};" if self.inits else ''}
+    node [shape = oval];
+
+    {(nl + '    ').join(strings)}
+    
+    label="
+    green border means initial state
+    red font means trap state
+    dot-arrow means stack independency
+    bold arrow means deterministic
+    "
+{rp}
+        '''

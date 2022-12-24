@@ -1,0 +1,20 @@
+node id1 (label="node1") {
+    (id2 a A / A,A (deterministic_flag))
+    (id3 b B / B,B (deterministic_flag))
+};
+
+node id1 (is_initial);
+
+node id2 {
+    (id4 a eps / eps (stack_independency_flag))
+    (id5 any any / B,B )
+};
+
+node id3 (is_initial);
+
+edge id3 -> id5 c [A / C] ( deterministic_flag ) ;
+
+group (is_final) {id4 id5};
+
+edge id5->id4 any [any/any] (stack_independency_flag );
+node id4 (is_trap);

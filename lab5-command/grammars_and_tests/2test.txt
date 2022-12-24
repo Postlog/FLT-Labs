@@ -1,0 +1,3 @@
+id1 (is_trap); 
+id2 (is_final label2);
+id3 (is_initial label: label3);

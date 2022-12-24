@@ -1,0 +1,12 @@
+node id1 (label="node1" is_initial);
+node id2 (label="node2");
+node id3 {
+    (id2 a A / A1, A)
+    (id1 b B / B, BB22 (stack_independency_flag deterministic_flag))
+};
+edge id2 b -> id3 any / eps;
+node id4;
+edge id2 a -> id3 A / eps (stack_independency_flag);
+
+group (is_final, is_trap is_trap, is_initial) id1 id2 ;
+

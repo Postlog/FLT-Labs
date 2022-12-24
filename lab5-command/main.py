@@ -5,6 +5,7 @@ import sys
 from pprint import pprint
 from pda import PDA
 
+
 def get_grammar_and_test(i):
     with open(f'grammars_and_tests/{i}test.txt') as t:
         with open(f'grammars_and_tests/{i}grammar.g4') as g:
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     print(test_raw)
     print('##############')
     pprint(model)
-    
+
     pda = PDA(model)
     graph = pda.get_graphviz_notation()
     with open('graph.dot', 'w') as f:

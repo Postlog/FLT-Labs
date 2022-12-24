@@ -1,0 +1,21 @@
+
+digraph G {
+    node [shape = doublecircle]; "id2";
+    node [shape = oval];
+
+    id2 [label="label2"];
+    id2;
+    id3;
+    id3 [label="label3"];
+    id3 [color="green"];
+    id1;
+    id1 [fontcolor="red"];
+    
+    label="
+    green border means initial state
+    red font means trap state
+    dot-arrow means stack independency
+    bold arrow means deterministic
+    "
+}
+        

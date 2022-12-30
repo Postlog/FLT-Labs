@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import sys
+from pprint import pprint
+
 import tatsu
 from tatsu.buffering import Buffer
 from tatsu.parsing import Parser
@@ -40,6 +43,13 @@ class PDASemantics:
         assert len(statements) == 1
         return statements[0][0]
 
+    # алфавиты
+    def alphabeth(self, ast):
+        return ast
+
+    def stack_alphabeth(self, ast):
+        return ast
+
     # отдельный узел
     def single_node_description(self, ast):
         ast = flatten(list(ast))
@@ -55,9 +65,9 @@ class PDASemantics:
         assert len(ids) == 1
         lables = lf('node_label', elements)
         assert len(lables) <= 1
-        initial_flag = lf('initial_flag', elements)
-        final_flag = lf('final_flag', elements)
-        trap_flag = lf('trap_flag', elements)
+        # initial_flag = lf('initial_flag', elements)
+        # final_flag = lf('final_flag', elements)
+        # trap_flag = lf('trap_flag', elements)
         transits = lf('single_node_transits', elements)
         ret = {
             'id': ids[0][1],
@@ -213,17 +223,17 @@ class PDASemantics:
     def final_flag(self, ast):
         return ('final_flag',)
 
-    def trap_flag(self, ast):
-        return ('trap_flag',)
+    # def trap_flag(self, ast):
+    #     return ('trap_flag',)
 
     def transit_flag(self, ast):
         return ('transit_flag', ast)
 
-    def deterministic_flag(self, ast):
-        return ('deterministic_flag',)
+    # def deterministic_flag(self, ast):
+    #     return ('deterministic_flag',)
 
-    def stack_independency_flag(self, ast):
-        return ('stack_independency_flag',)
+    # def stack_independency_flag(self, ast):
+    #     return ('stack_independency_flag',)
 
     # произвольные строковые литералы
     def string_literal_1(self, ast):

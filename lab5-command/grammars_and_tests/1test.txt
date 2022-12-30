@@ -1,6 +1,6 @@
 'id1' (label="node1" is_initial);
 'id2' (is_final label="no de2");
 'id3' (is_trap label"node3") 
-    (id2 a A / A A)
+    (id2 a A / C A A)
     (id1 b B / B B);
 'id4';

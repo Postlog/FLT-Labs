@@ -1,0 +1,4 @@
+alphabeth a b c;
+stack_alphabeth A B C D;
+
+edge id5 -> id4 any [any/any] ;

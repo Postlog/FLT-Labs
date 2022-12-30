@@ -6,8 +6,10 @@ node id1 (label="node1") {
 node id1 (is_initial);
 
 node id2 {
-    (id4 a eps / eps)
-    (id5 any any / B,B )
+    (id4 a eps / eps, eps, eps)
+    (id1 a A / eps)
+    (id1 eps any / any, B)
+    (id5 any any / B, eps ,B )
 };
 
 node id3 (is_initial);

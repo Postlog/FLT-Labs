@@ -5,9 +5,12 @@ start = stmts $ ;
 
 stmts = {stmt}* ;
 
-stmt = {single_edge_description | single_node_description | group_of_nodes} statement_separator ;
+stmt = {single_edge_description | single_node_description | group_of_nodes | alphabeth | stack_alphabeth} statement_separator ;
 
 # Логические блоки
+alphabeth = 'alphabeth' {alphabeth_symbol}*;
+stack_alphabeth = 'stack_alphabeth' {stack_symbol}*;
+
 single_node_description = 
     'node'
     node_id 

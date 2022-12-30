@@ -14,7 +14,7 @@ single_node_description =
 ;
 
 single_node_transits = {lp1 single_node_transit rp1}* ;
-single_node_transit = node_id alphabeth_unit stack_pop_symbol '/' stack_push_symbols ;
+single_node_transit = node_id alphabeth_unit stack_pop_symbol '/' {stack_push_symbol}* ;
 
 single_edge_description = 'edge' ;
 group_of_nodes = 'group' ;
@@ -35,8 +35,8 @@ eps_symbol = 'eps' ;
 alphabeth_symbol = /[a-z]/ ;
 
 stack_pop_symbol = stack_unit ;
-stack_push_symbols = stack_units ;
-stack_units = {stack_unit}+ ;
+stack_push_symbol = stack_unit;
+# stack_units = {stack_unit}+ ;
 stack_unit = | stack_any | stack_symbol | stack_eps ;
 stack_symbol = {/[A-Z]/}+{/[0-9]/}* ;
 stack_any = 'any' ;

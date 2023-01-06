@@ -271,7 +271,7 @@ class PDA:
             for i in iski:
                 el.stack_push_symbols[i] = STA
 
-            if any(map(lambda x: x in self.deterministic_transits, assembled)):
+            if all(map(lambda x: x in self.deterministic_transits, assembled)):
                 self.deterministic_transits.add(el)
 
             self.transits.add(el)

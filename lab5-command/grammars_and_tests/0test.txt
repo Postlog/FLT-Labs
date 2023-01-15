@@ -5,9 +5,11 @@ node id1 (label="node1") {
 
 node id1 (is_initial);
 
+edge id1 -> trap a [_EPSSTACK/_EPSSTACK];
+
 node id2 {
-    (id4 a eps / eps)
-    (id5 any any / B,B )
+    (id4 a _EPSSTACK / _EPSSTACK)
+    (id5 _ANYALPHA _ANYSTACK / B,B )
 };
 
 node id3 (is_initial);
@@ -16,5 +18,5 @@ edge id3 -> id5 c [A / C] ;
 
 group (is_final) {id4 id5};
 
-edge id5->id4 any [any/any] ;
+edge id5->id4 _ANYALPHA [_ANYSTACK/_ANYSTACK] ;
 node id4; 

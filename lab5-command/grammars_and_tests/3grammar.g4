@@ -28,7 +28,8 @@ stack_independency_flag = 'stack_independency_flag' ;
 # Символы строки
 alphabeth_units = {alphabeth_unit}+ ;
 alphabeth_unit = | eps_symbol | alphabeth_symbol ;
-eps_symbol = 'eps' ;
+eps_symbol = '_eps' ;
+any_symbol = '_any' ;
 alphabeth_symbol = /[a-z]/ ;
 
 # Символы стека

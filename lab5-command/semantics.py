@@ -11,6 +11,8 @@ from tatsu.parsing import leftrec, nomemo, isname
 from tatsu.infos import ParserConfig
 from tatsu.util import re, generic_main
 
+flags = dict()
+
 
 def flatten(list_of_lists):
     if isinstance(list_of_lists, tatsu.contexts.closure):
@@ -32,7 +34,7 @@ def notlf(key, ast):
 
 class PDASemantics:
     def start(self, ast):
-        return ast
+        return ast, flags
 
     def stmts(self, ast):
         return ast
@@ -187,9 +189,13 @@ class PDASemantics:
         return ('alphabeth_symbol', ast)
 
     def eps_symbol(self, ast):
+        global flags
+        flags['ae'] = ast
         return ('eps_symbol', ast)
 
     def any_symbol(self, ast):
+        global flags
+        flags['aa'] = ast
         return ('any_symbol', ast)
 
     def stack_push_symbol(self, ast):
@@ -208,9 +214,13 @@ class PDASemantics:
         return ('stack_symbol', ''.join(flatten(list(ast))))
 
     def stack_any(self, ast):
+        global flags
+        flags['sa'] = ast
         return ('stack_any',)
 
     def stack_eps(self, ast):
+        global flags
+        flags['se'] = ast
         return ('stack_eps',)
 
     # флаги

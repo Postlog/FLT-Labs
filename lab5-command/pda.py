@@ -7,22 +7,42 @@ STA = 'stack_any'
 STE = 'stack_eps'
 
 
+def symbol_to_flag(s, flags):
+    # return s
+    return flags['sa'] if s == STA \
+        else flags['se'] if s == STE \
+        else flags['aa'] if s == ALA \
+        else flags['ae'] if s == ALE \
+        else s
+
+
 class Transit:
-    def __init__(self, node_from, node_to, alphabeth_unit, stack_pop_symbol, stack_push_symbols, flags):
+    def __init__(self,
+                 node_from,
+                 node_to,
+                 alphabeth_unit,
+                 stack_pop_symbol,
+                 stack_push_symbols,
+                 flags
+                 ):
         self.node_from = node_from
         self.node_to = node_to
         self.type = alphabeth_unit[0]
-        self.alphabeth_symbol = alphabeth_unit[1] if alphabeth_unit[0] == 'alphabeth_symbol' else alphabeth_unit[0]
+        self.alphabeth_symbol = alphabeth_unit[1] if alphabeth_unit[0] == 'alphabeth_symbol' else \
+        alphabeth_unit[0]
         self.stack_pop_symbol = stack_pop_symbol[1] if len(
-            stack_pop_symbol) == 2 else stack_pop_symbol[0]
+            stack_pop_symbol
+        ) == 2 else stack_pop_symbol[0]
         stack_push_symbols = list(
-            map(lambda x: x[1] if len(x) == 2 else x[0], stack_push_symbols))
+            map(lambda x: x[1] if len(x) == 2 else x[0], stack_push_symbols)
+        )
         # если только eps, то весь = [eps], иначе почистим на лишние eps
         if any(map(lambda x: x == STE, stack_push_symbols)):
             stack_push_symbols = [STE]
         else:
             stack_push_symbols = list(
-                filter(lambda x: x != STE, stack_push_symbols))
+                filter(lambda x: x != STE, stack_push_symbols)
+            )
         self.stack_push_symbols = stack_push_symbols
         self.flags = set(flags)
 
@@ -51,7 +71,9 @@ class Transit:
 
 
 class PDA:
-    def __init__(self, ast):
+    def __init__(self, ast, flags):
+        self.flags = flags
+
         self.raw_ast = ast
         self.nodes = set()
         self.inits = set()
@@ -146,8 +168,13 @@ class PDA:
         while True:
             new_not_traps = set()
             for nt in not_traps:
-                new_not_traps |= set(map(lambda x: x.node_from, filter(
-                    lambda x: x.node_to in not_traps, self.transits)))
+                new_not_traps |= set(
+                    map(
+                        lambda x: x.node_from, filter(
+                            lambda x: x.node_to in not_traps, self.transits
+                        )
+                        )
+                    )
             if new_not_traps.difference(not_traps):
                 flag = True
                 not_traps |= new_not_traps
@@ -156,15 +183,24 @@ class PDA:
         self.traps = self.nodes.difference(not_traps)
 
     def build_alphahbeths(self):
-        self.alphabeth.update(set(filter(lambda x: x != ALE and x != ALA, map(
-            lambda x: x.alphabeth_symbol, self.transits))))
+        self.alphabeth.update(
+            set(
+                filter(
+                    lambda x: x != ALE and x != ALA, map(
+                        lambda x: x.alphabeth_symbol, self.transits
+                    )
+                    )
+                )
+            )
 
         self.stack_alphabeth.update(
-            set(map(lambda x: x.stack_pop_symbol, self.transits)))
+            set(map(lambda x: x.stack_pop_symbol, self.transits))
+        )
         for x in self.transits:
             self.stack_alphabeth.update(x.stack_push_symbols)
         self.stack_alphabeth = set(
-            filter(lambda x: x != STA and x != STE, self.stack_alphabeth))
+            filter(lambda x: x != STA and x != STE, self.stack_alphabeth)
+        )
 
         # print('ALPHABETHS:', self.alphabeth, self.stack_alphabeth)
 
@@ -204,7 +240,8 @@ class PDA:
                 if c.stack_pop_symbol == STA:
                     c.stack_pop_symbol = salpha
                 c.stack_push_symbols = list(
-                    map(lambda x: salpha if x == STA else x, c.stack_push_symbols))
+                    map(lambda x: salpha if x == STA else x, c.stack_push_symbols)
+                )
                 self.transits.add(c)
 
     def find_deterministic_transits(self):
@@ -217,7 +254,8 @@ class PDA:
             # print("НОДА", node)
             # найдем все переходы из этого узла
             transits = set(
-                filter(lambda x: x.node_from == node, self.transits))
+                filter(lambda x: x.node_from == node, self.transits)
+            )
             # print("ТРАНСИТЫ", transits)
             for t in transits:
                 similars = set(map(lambda x: x.is_similar(t), transits))
@@ -227,8 +265,11 @@ class PDA:
                     self.deterministic_transits.add(t)
 
         # print('DETERMINISTICS')
-        # for x in self.deterministic_transits:
-        #     print(x)
+        for x in self.deterministic_transits:
+            print(x)
+            # for y in self.transits:
+            #     if x.is_similar(y) and x.node_from == y.node_from:
+            #         print(x, y)
 
     def loop(self, assembled, transits_set, rest_stack_aphabeth):
         rest_stack_aphabeth = deepcopy(rest_stack_aphabeth)
@@ -249,7 +290,8 @@ class PDA:
             iski = set()
             for i in range(len(el.stack_push_symbols)):
                 i_symbols = set(
-                    map(lambda x: x.stack_push_symbols[i], assembled))
+                    map(lambda x: x.stack_push_symbols[i], assembled)
+                )
                 if len(i_symbols) == 1:
                     continue
                 else:
@@ -278,8 +320,12 @@ class PDA:
             return
 
         another_stack_symbol = rest_stack_aphabeth.pop()
-        transits = set(filter(lambda x: x.stack_pop_symbol ==
-                                        another_stack_symbol, transits_set))
+        transits = set(
+            filter(
+                lambda x: x.stack_pop_symbol ==
+                          another_stack_symbol, transits_set
+                )
+            )
         # если транзитов по какому-то стековому символу нет, то any мы никак не наберем
         if not transits:
             return
@@ -296,9 +342,12 @@ class PDA:
             for node2 in self.nodes:
                 for alpha in self.alphabeth | set([ALE]):
                     # найдем все переходы из этого узла по конкретной букве
-                    transits = set(filter(
-                        lambda x: x.node_from == node and x.node_to == node2 and x.alphabeth_symbol == alpha,
-                        self.transits))
+                    transits = set(
+                        filter(
+                            lambda x: x.node_from == node and x.node_to == node2 and x.alphabeth_symbol == alpha,
+                            self.transits
+                        )
+                    )
 
                     # if not transits:
                     # continue
@@ -310,8 +359,12 @@ class PDA:
         self.to_delete_transits = set()
         for node in self.nodes:
             for node2 in self.nodes:
-                transits = set(filter(
-                    lambda x: x.node_from == node and x.node_to == node2 and x.alphabeth_symbol != ALE, self.transits))
+                transits = set(
+                    filter(
+                        lambda x: x.node_from == node and x.node_to == node2 and x.alphabeth_symbol != ALE,
+                        self.transits
+                    )
+                )
                 stack_variants = set(map(lambda x: x.st(), transits))
                 # print('PAIR', node, node2, stack_variants)
                 for variant in stack_variants:
@@ -335,28 +388,36 @@ class PDA:
         quote = '"'
         nl = '\n'
         strings = set()
-        strings.update([
-            f'{node};'
-            for node in self.nodes
-        ])
-        strings.update([
-            f'{node} [label="{label}"];'
-            for node, label in self.labels.items()
-        ])
-        strings.update([
-            f'{node} [color="green"];'
-            for node in self.inits
-        ])
-        strings.update([
-            f'{node} [fontcolor="red"];'
-            for node in self.traps
-        ])
+        strings.update(
+            [
+                f'{node};'
+                for node in self.nodes
+            ]
+        )
+        strings.update(
+            [
+                f'{node} [label="{label}"];'
+                for node, label in self.labels.items()
+            ]
+        )
+        strings.update(
+            [
+                f'{node} [color="green"];'
+                for node in self.inits
+            ]
+        )
+        strings.update(
+            [
+                f'{node} [fontcolor="red"];'
+                for node in self.traps
+            ]
+        )
         for transit in self.transits:
             ids = f'{transit.node_from} -> {transit.node_to}'
             if ("stack_independency_flag",) in transit.flags:
                 optional = f"arrowhead={quote}dot{quote}"
             else:
-                optional = f'label="{transit.alphabeth_symbol}, [{transit.stack_pop_symbol}/{",".join(transit.stack_push_symbols)}]"'
+                optional = f'label="{symbol_to_flag(transit.alphabeth_symbol, self.flags)}, [{symbol_to_flag(transit.stack_pop_symbol, self.flags)}/{",".join(list(map(lambda x: symbol_to_flag(x, self.flags), transit.stack_push_symbols)))}]"'
             if transit in self.deterministic_transits:
                 optional += ' penwidth="2.5"'
             strings.add(f'{ids} [{optional}]')
